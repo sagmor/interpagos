@@ -1,11 +1,10 @@
 module Interpagos
   class Client
-    attr_accessor :merchant_id, :account_id, :login, :key
+    attr_accessor :client_id, :client_pin
+
     def initialize(options = {})
-      self.merchant_id  = options[:merchant_id]
-      self.account_id   = options[:account_id]
-      self.login        = options[:login]
-      self.key          = options[:key]
+      self.client_id    = options[:client_id]
+      self.client_pin   = options[:client_pin]
       self.test         = !!options[:test]
     end
 
