@@ -1,35 +1,37 @@
-module Pagosonline
+module Interpagos
   class Payment < Hashie::Dash
-    GATEWAY = "https://gatewaylap.pagosonline.net/ppp-web-gateway/"
-    TEST_GATEWAY= "https://stg.gatewaylap.pagosonline.net/ppp-web-gateway/"
-    SIGNATURE_JOIN = "~"
+    GATEWAY = "https://secure.interpagos.net/gateway/"
+    TEST_GATEWAY= ""
+    SIGNATURE_JOIN = "-"
 
     attr_accessor :client
 
     # Configurables
     property :reference, :required => true
     property :description, :required => true
-    property :amount, :required => true
+    property :base_amount, :required => true
+    property :tax_amount, :required => true
+    property :total_amount, :required => true
     property :currency, :required => true, :default => "COP"
-    property :response_url
-    property :confirmation_url
+    property :language, :required => true, :default => "SP"
+
+    property :response_url, :required => true
+    property :confirmation_url, :required => true
     property :extra
     property :buyer_name
     property :buyer_email
-    property :language, :default => "es"
 
     def signature
-      Digest::MD5.hexdigest([
-        self.client.key,
-        self.client.merchant_id,
+      Digest::SHA1.hexdigest([
+        self.client.client_id,
+        self.client.client_pin,
         self.reference,
-        self.amount.to_i,
-        self.currency
+        ("%.2f" % self.amount)
       ].join(SIGNATURE_JOIN))
     end
 
     def form(options = {})
-      id = params[:id] || "pagosonline"
+      id = params[:id] || "interpagos"
 
       form = <<-EOF
         <form
@@ -57,30 +59,29 @@ module Pagosonline
 
       def params
         params = {
-          "usuarioId"         => self.client.merchant_id,
-          "cuentaId"          => self.client.account_id,
-          "refVenta"          => self.reference,
-          "firma"             => self.signature,
-          "valor"             => self.amount.to_i,
-          "iva"               => nil,
-          "baseDevolucionIva" => nil,
-          "moneda"            => self.currency,
-          "descripcion"       => self.description,
-          "lng"               => self.language,
-          "url_respuesta"     => self.response_url,
-          "url_confirmacion"  => self.confirmation_url,
-
-          "nombreComprador"   => self.buyer_name,
-          "emailComprador"    => self.buyer_email
+          "IdClient"            => self.client.client_id,
+          "Token"               => self.signature,
+          "IdReference"         => self.reference,
+          "Reference"           => self.description,
+          "Currency"            => self.currency,
+          "BaseAmount"          => ("%.2f" % self.base_amount),
+          "TaxAmount"           => ("%.2f" % self.tax_amount),
+          "TotalAmount"         => ("%.2f" % self.total_amount),
+          "ShopperName"         => self.buyer_name,
+          "ShopperEmail"        => self.buyer_email,
+          "LenguajeInterface"   => self.language,
+          "PayMethod"           => 1,
+          "RecurringBill"       => 0,
+          "RecurringBillTimes"  => 0,
+          "PageAnswer"          => self.response_url,
+          "PageConfirm"         => self.confirmation_url,
+          "Test"                => (self.client.test? ? 1 : 0)
         }
 
-        if self.client.test?
-          params["prueba"] = 1
-        end
-
         if self.extra
-          params["extra1"] = self.extra[0,249]
-          params["extra2"] = self.extra[250,499]
+          params["ExtraData1"] = self.extra[0,249]
+          params["ExtraData2"] = self.extra[250,499]
+          params["ExtraData3"] = self.extra[500,749]
         end
 
         params

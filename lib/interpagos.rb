@@ -1,4 +1,4 @@
-require 'digest/md5'
+require 'digest/sha1'
 require "hashie"
 
 require "interpagos/version"
