@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "pagosonline/version"
+require "interpagos/version"
 
 Gem::Specification.new do |s|
-  s.name        = "pagosonline"
-  s.version     = Pagosonline::VERSION
+  s.name        = "interpagos"
+  s.version     = Interpagos::VERSION
   s.authors     = ["Sebastian Gamboa"]
   s.email       = ["me@sagmor.com"]
   s.homepage    = ""
-  s.summary     = %q{Pagosonline}
-  s.description = %q{Pagosonline}
+  s.summary     = %q{Interpagos}
+  s.description = %q{Interpagos}
 
   s.rubyforge_project = "pagosonline"
 

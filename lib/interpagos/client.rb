@@ -1,4 +1,4 @@
-module Pagosonline
+module Interpagos
   class Client
     attr_accessor :merchant_id, :account_id, :login, :key
     def initialize(options = {})
@@ -10,13 +10,13 @@ module Pagosonline
     end
 
     def payment(options)
-      Pagosonline::Payment.new(options).tap do |payment|
+      Interpagos::Payment.new(options).tap do |payment|
         payment.client = self
       end
     end
 
     def response(options)
-      Pagosonline::Response.new(options).tap do |response|
+      Interpagos::Response.new(options).tap do |response|
         response.client = self
       end
     end

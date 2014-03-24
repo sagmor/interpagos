@@ -1,6 +1,6 @@
-module Pagosonline
+module Interpagos
   class Response
-    SIGNATURE_JOIN = "~"
+    SIGNATURE_JOIN = "-"
 
     attr_accessor :client
     attr_accessor :params
