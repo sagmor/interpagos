@@ -10,32 +10,35 @@ module Interpagos
     end
 
     def test?
-      params["prueba"] == "1"
+      params["Test"] == "1"
     end
 
     def currency
-      params["moneda"]
+      params["Currency"]
     end
 
     def signature
-      params["firma"]
-    end
-
-    def state_code
-      (params["estado"] || params["estado_pol"]).to_i
+      params["TokenTransactionCode"]
     end
 
     def state
-      case state_code
-      when 2    then :new
-      when 101  then :fx_converted
-      when 102  then :verified
-      when 103  then :submitted
-      when 4    then :approved
-      when 6    then :declined
-      when 104  then :error
-      when 7    then :pending
-      when 5    then :expired
+      case transaction_code
+      when "00" then :approved
+      when "01" then :expired
+      when "02" then :approved
+      when "03" then :declined
+      when "04" then :declined
+      when "05" then :declined
+      when "06" then :declined
+      when "07" then :declined
+      when "08" then :declined
+      when "09" then :declined
+      when "10" then :pending
+      when "11" then :pending
+      when "15" then :pending
+      when "16" then :cash # No idea if this mean approved or pending (Official manual page 18)
+      else
+        :unknown
       end
     end
 
@@ -47,26 +50,41 @@ module Interpagos
       [:error, :expired, :declined].include? self.state
     end
 
-    def amount
-      self.params["valor"].to_f
+    def total_amount
+      Float(self.params["TotalAmount"])
+    end
+
+    def tax_amount
+      Float(self.params["TaxAmount"])
+    end
+
+    def base_amount
+      Float(self.params["BaseAmount"])
     end
 
     def reference
-      self.params["ref_venta"]
+      self.params["IdReference"]
     end
 
     def transaccion_id
-      self.params["transaccion_id"]
+      self.params["TransactionId"]
+    end
+
+    def transaction_message
+      self.params["TransactionMessage"]
+    end
+
+    def transaction_code
+      self.params["TransactionCode"]
     end
 
     def valid?
-      self.signature == Digest::MD5.hexdigest([
-        self.client.key,
-        self.client.merchant_id,
+      self.signature == Digest::SHA1.hexdigest([
+        self.client.client_id,
+        self.client.client_pin,
         self.reference,
-        ("%.1f" % self.amount),
-        self.currency,
-        self.state_code
+        ("%.2f" % self.total_amount),
+        self.transaction_code
       ].join(SIGNATURE_JOIN))
     end
   end

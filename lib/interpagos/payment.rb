@@ -26,7 +26,7 @@ module Interpagos
         self.client.client_id,
         self.client.client_pin,
         self.reference,
-        ("%.2f" % self.amount)
+        ("%.2f" % self.total_amount)
       ].join(SIGNATURE_JOIN))
     end
 
