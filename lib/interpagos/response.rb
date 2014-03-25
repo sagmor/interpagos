@@ -63,7 +63,7 @@ module Interpagos
     end
 
     def reference
-      self.params["IdReference"]
+      self.params["IDReference"]
     end
 
     def transaction_id

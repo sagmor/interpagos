@@ -61,7 +61,7 @@ module Interpagos
         params = {
           "IdClient"            => self.client.client_id,
           "Token"               => self.signature,
-          "IdReference"         => self.reference,
+          "IDReference"         => self.reference,
           "Reference"           => self.description,
           "Currency"            => self.currency,
           "BaseAmount"          => ("%.2f" % self.base_amount),
@@ -69,7 +69,7 @@ module Interpagos
           "TotalAmount"         => ("%.2f" % self.total_amount),
           "ShopperName"         => self.buyer_name,
           "ShopperEmail"        => self.buyer_email,
-          "LenguajeInterface"   => self.language,
+          "LanguajeInterface"   => self.language,
           "PayMethod"           => 1,
           "RecurringBill"       => 0,
           "RecurringBillTimes"  => 0,
